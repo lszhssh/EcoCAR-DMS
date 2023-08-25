@@ -8,15 +8,6 @@ import numpy as np
 im = cv2.imread("side.jpg");
 size = im.shape
     
-#2D image points. If you change the image, you need to change vector
-# image_points = np.array([
-#                             (359, 391),     # Nose tip
-#                             (399, 561),     # Chin
-#                             (337, 297),     # Left eye left corner
-#                             (513, 301),     # Right eye right corne
-#                             (345, 465),     # Left Mouth corner
-#                             (453, 469)      # Right mouth corner
-#                         ], dtype="double")
 image_points = np.array([
                             (1152, 1320),     # Nose tip
                             (1048, 1848),     # Chin
@@ -58,7 +49,6 @@ print("Translation Vector:\n {0}".format(translation_vector));
 
 # Project a 3D point (0, 0, 1000.0) onto the image plane.
 # We use this to draw a line sticking out of the nose
-
 
 (nose_end_point2D, jacobian) = cv2.projectPoints(np.array([(0.0, 0.0, 1000.0)]), rotation_vector, translation_vector, camera_matrix, dist_coeffs)
 
