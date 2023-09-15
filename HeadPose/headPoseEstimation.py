@@ -1,5 +1,5 @@
 # CREDIT: Nicolai Nielsen for the structure
-# Ideas: check how long looking down; tune params
+# Ideas: check how long looking down
 
 import cv2
 import mediapipe as mp
@@ -39,6 +39,9 @@ while cap.isOpened():
     img_h, img_w, img_c = image.shape
     face_3d = []
     face_2d = []
+
+    # distraction_start = 0
+    # distraction_end = 0
 
     if results.multi_face_landmarks:
         for face_landmarks in results.multi_face_landmarks:
@@ -86,18 +89,33 @@ while cap.isOpened():
             y = angles[1] * 360
             z = angles[2] * 360
           
+            # curr_time = time.time()
 
             # See where the user's head tilting
-            if y < -10:
+            if y < -5:
                 text = "Looking Left"
-            elif y > 10:
+                # if distraction_start != 0:
+                #     distraction_start = 0
+            elif y > 5:
                 text = "Looking Right"
-            elif x < -10:
+                # if distraction_start != 0:
+                #     distraction_start = 0
+            elif x < -2:
                 text = "Looking Down"
-            elif x > 10:
+                # if distraction_start == 0:
+                #     distraction_start = curr_time
+                # else:
+                #     distraction_end = curr_time
+                #     if distraction_end - distraction_start > 5:
+                #         text = "Distracted"
+            elif x > 5:
                 text = "Looking Up"
+                # if distraction_start != 0:
+                #     distraction_start = 0
             else:
                 text = "Forward"
+                # if distraction_start != 0:
+                #     distraction_start = 0
 
             # Display the nose direction
             nose_3d_projection, jacobian = cv2.projectPoints(nose_3d, rot_vec, trans_vec, cam_matrix, dist_matrix)
@@ -109,9 +127,11 @@ while cap.isOpened():
 
             # Add the text on the image
             cv2.putText(image, text, (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 2)
-            cv2.putText(image, "x: " + str(np.round(x,2)), (500, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-            cv2.putText(image, "y: " + str(np.round(y,2)), (500, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-            cv2.putText(image, "z: " + str(np.round(z,2)), (500, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            cv2.putText(image, 'x: ' + str(np.round(x,2)), (500, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            cv2.putText(image, 'y: ' + str(np.round(y,2)), (500, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            cv2.putText(image, 'z: ' + str(np.round(z,2)), (500, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            # cv2.putText(image, 'distraction_start: ' + str(np.round(distraction_start, 2)), (500, 200), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            # cv2.putText(image, 'distraction_end: ' + str(np.round(distraction_end, 2)), (500, 250), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
 
         end = time.time()
