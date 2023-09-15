@@ -1,9 +1,12 @@
+# import opencv, dlib face detection library, and numpy
 import cv2
 import dlib
 import numpy as np
 
+# begin video stream (0 is for webcam)
 cap = cv2.VideoCapture(0)
 
+# specify detectors used
 hog_face_detector = dlib.get_frontal_face_detector()
 
 dlib_facelandmark = dlib.shape_predictor("/Users/sizheli/GitHub/EcoCAR-DMS/HeadPose/shape_predictor_68_face_landmarks.dat")
@@ -18,6 +21,7 @@ model_points = np.array([
                             (150.0, -150.0, -125.0)      # Right mouth corner
                         ])
 
+# labeling loop while video stream is live
 while True:
     _, frame = cap.read()
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -32,7 +36,7 @@ while True:
         for n in range(0, 68):
             x = face_landmarks.part(n).x
             y = face_landmarks.part(n).y
-            if n == 33:          # nose tip
+            if n == 33:          # nose tip index in 68-landmarks
                 facial_coords[0] = [x, y]
                 cv2.circle(frame, (x, y), 1, (255, 0, 0), 1)
             elif n == 8:         # chin
@@ -70,8 +74,7 @@ while True:
     print("Translation Vector:\n {0}".format(translation_vector));
 
 
-    # Project a 3D point (0, 0, 1000.0) onto the image plane.
-    # We use this to draw a line sticking out of the nose
+    # project a 3D point (0, 0, 1000.0) onto the image plane.
 
     (nose_end_point2D, jacobian) = cv2.projectPoints(np.array([(0.0, 0.0, 1000.0)]), rotation_vector, translation_vector, camera_matrix, dist_coeffs)
 
